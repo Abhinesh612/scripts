@@ -1,5 +1,18 @@
 #!/bin/sh
 
+############################################################
+# Filename   : fun-sh                                      #
+# Author     : Abhinesh (--Sad-One)                        #
+# Created    : ---                                         #
+# Last edit  : ---                                         #
+# Purpose    : dmenu to open file and videos               #
+# Reference  : ---                                         #
+# Depends    : mpv, zathura +optional-deps                 #
+# Arguments  : -t, -f                                      #
+# Known bugs : x                                           #
+# To do      : song player                                 #
+############################################################
+
 print_error() {
     echo "$(basename "$0"): Error"
     exit 1

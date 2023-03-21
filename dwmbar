@@ -1,13 +1,17 @@
 #!/bin/sh
 
-speed_init() {
-    rev_init=$(cat /proc/net/dev | awk 'NR==5 {print $2}')
-    tra_init=$(cat /proc/net/dev | awk 'NR==5 {print $10}')
-}
-speed_final() {
-    rev_final=$(cat /proc/net/dev | awk 'NR==5 {print $2}')
-    tra_final=$(cat /proc/net/dev | awk 'NR==5 {print $10}')
-}
+############################################################
+# Filename   : dwmbar                                      #
+# Author     : Abhinesh (--Sad-One)                        #
+# Created    : ---                                         #
+# Last edit  : ---                                         #
+# Purpose    : dwm status bar shows status                 #
+# Reference  : ---                                         #
+# Depends    : amixer, xorg-xprop                          #
+# Arguments  : x                                           #
+# Known bugs : x                                           #
+# To do      : network speed                               #
+############################################################
 
 while :; do
     audio=$(amixer sget Master | awk '/^[[:blank:]]*Mono/ {print $6}' | sed 's/\[//g;s/\]//g')
