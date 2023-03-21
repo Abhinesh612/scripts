@@ -1,0 +1,16 @@
+#!/bin/sh
+
+walldir="$HOME/picture/wallhaven"
+temp=$(mktemp /tmp/wallpix.XXXXXX)
+page=4
+
+search=$(echo $@ | sed 's/ /+/g')
+
+for i in $(seq 1 $page)
+do
+    curl -s https://wallhaven.cc/api/v1/search\?atleast\=1920x1080\&q\=$search\&page\=$i | jq '.' | grep -oE 'https://w.wallhaven.cc/full/.*(jpg|png)' > $temp 2> /dev/null
+    while read -r line; do
+        wget -nc -P $walldir $line
+    done < $temp
+done
+rm $temp

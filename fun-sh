@@ -1,0 +1,65 @@
+#!/bin/sh
+
+print_error() {
+    echo "$(basename "$0"): Error"
+    exit 1
+}
+
+while getopts 't:f:h' flag;
+do
+    case "${flag}" in
+        t) if [ "${OPTARG}" = "manga"  ];
+        then
+            run="zathura"
+        elif [ "${OPTARG}" = "video" ];
+        then
+            run="mpv"
+        else
+            print_error
+        fi ;;
+        f) if [ -d "${OPTARG}" ];
+        then
+            location="${OPTARG}"
+        else
+            print_error
+        fi ;;
+        h) echo "Help"
+            exit 0;;
+        *) print_error ;;
+    esac
+done
+
+if [ -z "${run}" ] || [ -z "${location}" ];
+then
+    echo "Missing -t or -f" >&2
+    exit 1
+fi
+
+for i in $(seq 5);
+do
+    target=$(ls "${location}" | dmenu -c -l 10)
+    if [ "${target}" = "exit" ];
+    then
+        exit 0
+    elif [ -z "${target}" ];
+    then
+        exit 0
+    fi
+
+    location=""${location}"/"${target}""
+    echo "$location"
+    if ! [ -d "${location}" ];
+    then
+        if [ "${run}" = "zathura" ];
+        then
+            setsid -f zathura "${location}" &
+        elif [ "${run}" = "mpv" ];
+        then
+            setsid -f mpv --fs "${location}" &
+        else
+            exit 1
+        fi
+        # End of Script
+        exit 0
+    fi
+done

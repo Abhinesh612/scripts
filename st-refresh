@@ -1,0 +1,6 @@
+#!/bin/sh
+ 
+# Script will kill the Sleep of dwmbar
+# dwmbar sleep will be killed
+kill $(pstree -lp | grep -oE 'dwmbar.*' | sed 's/.*sleep*//g;s/(//g;s/)//g') 2>&1 /dev/null
+

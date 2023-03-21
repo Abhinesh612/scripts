@@ -1,0 +1,54 @@
+#!/bin/sh
+
+speed_init() {
+    rev_init=$(cat /proc/net/dev | awk 'NR==5 {print $2}')
+    tra_init=$(cat /proc/net/dev | awk 'NR==5 {print $10}')
+}
+speed_final() {
+    rev_final=$(cat /proc/net/dev | awk 'NR==5 {print $2}')
+    tra_final=$(cat /proc/net/dev | awk 'NR==5 {print $10}')
+}
+
+while :; do
+    audio=$(amixer sget Master | awk '/^[[:blank:]]*Mono/ {print $6}' | sed 's/\[//g;s/\]//g')
+	date=$(date +'%d-%b %R')
+    audio_value=$(amixer sget Master | awk '/^[[:blank:]]*Mono/ {print $4 }' | sed 's/\[//g;s/\]//g')
+	capacity=$(cat /sys/class/power_supply/BAT1/capacity)
+	# status=$(cat /sys/class/power_supply/BAT1/status)
+    mem_status=$(free -h | awk 'NR==2 {print $3"/"$2}')
+
+    # Audio Emoji
+    # On and Off emoji
+    if [ $audio = 'on' ]
+    then
+        # audio_emoji=🔊
+        audio_emoji=
+    else
+        # audio_emoji=🔇
+        audio_emoji=
+    fi
+
+    # Battery Capacity
+    # Changing emoji base on batter capacity
+    # 0-20-40-60-80-*+
+    if [ $capacity -ge 80 ]
+    then
+        capacity_emoji=
+    elif [ $capacity -ge 60 ] && [ $capacity -lt 80 ]
+    then
+        capacity_emoji=
+    elif [ $capacity -ge 40 ] && [ $capacity -lt 60 ]
+    then
+        capacity_emoji=
+    elif [ $capacity -ge 20 ] && [ $capacity -lt 40 ]
+    then
+        capacity_emoji=
+    elif [ $capacity -ge 0 ] && [ $capacity -lt 20 ]
+    then
+        capacity_emoji=
+    fi
+
+	bar="[ ${mem_status} ][ ${audio_emoji} ${audio_value}][ ${date} ][ ${capacity_emoji} ${capacity}% ]"
+	xprop -root -set WM_NAME "$bar"
+	sleep 1s
+done

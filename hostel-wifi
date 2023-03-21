@@ -1,0 +1,8 @@
+#!/bin/sh
+
+curl -s http://www.msftconnecttest.com/redirect | grep -o 'http://10.5.1.1:1000.*"' | sed 's/"//' | xclip -sel clip
+
+# url=$(curl -s http://www.msftconnecttest.com/redirect | grep -o 'http://10.5.1.1:1000.*"')
+# echo $url
+# echo $url | sed 's/"//' | xclip -sel clip
+

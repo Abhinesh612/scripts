@@ -1,0 +1,38 @@
+#!/bin/sh
+
+# Initial receive bits of recivec and transmited data
+while :;
+do
+    rev_init=$(cat /proc/net/dev | awk 'NR==5 {print $2}')
+    tra_init=$(cat /proc/net/dev | awk 'NR==5 {print $10}')
+
+    sleep 1s
+
+    rev_final=$(cat /proc/net/dev | awk 'NR==5 {print $2}')
+    tra_final=$(cat /proc/net/dev | awk 'NR==5 {print $10}')
+
+    rev=$((rev_final - rev_init))
+    tra=$((tra_final - tra_init))
+
+    rev_sym="KB/s"
+    tra_sym="KB/s"
+
+    rev_dev=1000
+    tra_dev=1000
+    if [ $rev -ge 1000000 ] 
+    then
+        rev_sym="MB/s"
+        rev_dev=$((rev_dev*1000))
+    fi
+    if [ $tra -ge 1000000 ] 
+    then
+        tra_sym="MB/s"
+        tra_dev=$((tra_dev*1000))
+    fi
+
+    rev=$(echo "$rev / $rev_dev" | bc -l ) 
+    tra=$(echo "$tra / $tra_dev" | bc -l ) 
+
+
+    printf "%.1f%s %.1f%s\n" $rev "$rev_sym" $tra "$tra_sym"
+done
