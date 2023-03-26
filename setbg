@@ -1,0 +1,70 @@
+#!/bin/sh
+
+#  ____       _   _           
+# / ___|  ___| |_| |__   __ _ 
+# \___ \ / _ \ __| '_ \ / _` |
+#  ___) |  __/ |_| |_) | (_| |
+# |____/ \___|\__|_.__/ \__, |
+#                       |___/ 
+#
+
+# file for the wallpaper
+file=$(realpath "$1")
+
+# if path of image is passed it will change the __DATA__ 
+# it make overwirte setbg file upto __DATA__ 
+# after that first line after __DATA__ is the background image path
+change_bg() {
+    temp=$(mktemp setbg.XXXXXX)
+    awk '{printf "%s\n", $0; if ( $0 == "__DATA__" ) exit}' "$0" 2> /dev/null > $temp
+    echo "$file" >> $temp
+    cat $temp > ~/bin/setbg
+    rm -rf $temp
+}
+# it parse the setbg file of background image path
+# it will set the image file for first line of __DATA__ in this file
+set_bg() {
+    local bg=$(sed -n '/^__DATA__$/{n;p;}' "$0")
+    xwallpaper --zoom "$bg" 2> /dev/null
+}
+
+#
+# START
+#
+# checking wheather the image path is provided or not
+# 
+# if the image path is not provided then the already listed image path in
+# __DATA__ will be used as image of wallpaper
+# if __DATA__ is null wallpaper will be not set
+if [ -z "$file" ]; then
+    bg=$(sed -n '/^__DATA__$/{n;p;}' "$0")
+    if [ -z "$bg" ]; then
+        echo "$(basename "$0"): No file or invalid in __DATA__"
+        exit 1
+    fi
+    set_bg
+    exit
+else
+    if [ -f "$file" ]; then
+        change_bg "$file"
+        set_bg
+        exit
+    else
+        echo "$(basename "$0"): No invalid file path or file doesn't exist"
+        exit 1
+    fi
+fi
+
+exit
+
+# __DATE__ is store the image path for the wallpaper
+# ONLY FIRST LINE WILL AFTER THE __DATA__ WILL BE READ AND USED FOR WALLAPAPER
+# AFTER THAT ON LINE WILL BE READ
+# Don't change the format of __DATA__ 
+# __DATA__ and image path should be consequtive without any extra space and new line between them
+# 
+# EXAMPLE
+# __DATA__
+# /path/to/wallapaper/image.png
+__DATA__
+/home/abhinesh/picture/wallpaper/girl_2.jpg
